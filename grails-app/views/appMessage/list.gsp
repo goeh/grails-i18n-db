@@ -51,5 +51,12 @@
 <div class="pagination">
     <bootstrap:paginate total="${appMessageTotal}"/>
 </div>
+
+<div class="form-actions">
+    <g:link action="create" class="btn btn-primary"><i
+            class="icon-plus icon-white"></i> <g:message code="appMessage.button.create.label" default="Create"/>
+    </g:link>
+</div>
+
 </body>
 </html>

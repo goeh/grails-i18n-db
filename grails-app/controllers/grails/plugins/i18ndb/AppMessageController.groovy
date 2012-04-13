@@ -25,9 +25,21 @@ class AppMessageController {
 
     static navigation = [
             [group: 'admin',
-                    order: 80,
+                    order: 930,
                     title: 'appMessage.label',
                     action: 'list'
+            ],
+            [group: 'appMessage',
+                    order: 10,
+                    title: 'appMessage.create.label',
+                    action: 'create',
+                    isVisible: { actionName != 'create' }
+            ],
+            [group: 'appMessage',
+                    order: 20,
+                    title: 'appMessage.list.label',
+                    action: 'list',
+                    isVisible: { actionName != 'list' }
             ]
     ]
 

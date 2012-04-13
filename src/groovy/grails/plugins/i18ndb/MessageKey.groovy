@@ -24,13 +24,30 @@ package grails.plugins.i18ndb
  */
 //@Immutable
 final class MessageKey implements Serializable {
-    String code
-    Locale locale
+    final String code
+    final Locale locale
 
     MessageKey(String code, Locale locale) {
         this.code = code
         this.locale = locale
     }
+
+    boolean equals(o) {
+        if (this.is(o)) return true;
+        if (getClass() != o.class) return false;
+
+        MessageKey that = (MessageKey) o;
+
+        if (code != that.code) return false;
+        if (locale != that.locale) return false;
+
+        return true;
+    }
+
+    int hashCode() {
+        int result;
+        result = (code != null ? code.hashCode() : 0);
+        result = 31 * result + (locale != null ? locale.hashCode() : 0);
+        return result;
+    }
 }
-
-

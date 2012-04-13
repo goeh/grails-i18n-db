@@ -21,6 +21,7 @@ import java.text.MessageFormat
 import net.sf.ehcache.Ehcache
 import net.sf.ehcache.Element
 import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource
+import org.apache.commons.logging.LogFactory
 
 /**
  *
@@ -29,21 +30,31 @@ import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessa
  */
 class MessageSource extends PluginAwareResourceBundleMessageSource {
 
+    private static LOG = LogFactory.getLog(MessageSource)
+
     Ehcache messageCache
 
     @Override
     protected MessageFormat resolveCode(String code, Locale locale) {
         def key = new MessageKey(code, locale)
         def format = messageCache?.get(key)?.value
-        if(format == null) {
+        if (format == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug('cache MISS ' + code)
+            }
             format = findCode(code, locale) {a, l ->
                 super.resolveCode(a, l)
             }
-            if(format != null && messageCache != null) {
+            if (format != null && messageCache != null) {
                 messageCache.put(new Element(key, format))
             }
-        } else if(! (format instanceof MessageFormat)) {
+        } else if (!(format instanceof MessageFormat)) {
             format = new MessageFormat(format.toString(), locale)
+            if (LOG.isDebugEnabled()) {
+                LOG.debug('cache HIT ' + code)
+            }
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug('cache HIT ' + code)
         }
         return format
     }
@@ -52,13 +63,18 @@ class MessageSource extends PluginAwareResourceBundleMessageSource {
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
         def key = new MessageKey(code, locale)
         def format = messageCache?.get(key)?.value
-        if(format == null) {
+        if (format == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug('- ' + code)
+            }
             format = findCode(code, locale) {a, l ->
                 super.resolveCodeWithoutArguments(a, l)
             }
-            if(format != null && messageCache != null) {
+            if (format != null && messageCache != null) {
                 messageCache.put(new Element(key, format))
             }
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug('+ ' + code)
         }
         return (format instanceof MessageFormat) ? format.toPattern() : format
     }
@@ -67,14 +83,14 @@ class MessageSource extends PluginAwareResourceBundleMessageSource {
         // Try with exact match
         def alternatives = [code]
         // Add '.label' suffix.
-        if(!code.endsWith('.label')) {
+        if (!code.endsWith('.label')) {
             alternatives << (code + '.label')
         }
         // Replace first group with 'default'
         def altCode = (code =~ /^[^\.]+\./).replaceFirst("default.")
-        if(altCode != code) {
+        if (altCode != code) {
             alternatives << altCode
-            if(!altCode.endsWith('.label')) {
+            if (!altCode.endsWith('.label')) {
                 alternatives << (altCode + '.label')
             }
         }
@@ -91,14 +107,13 @@ class MessageSource extends PluginAwareResourceBundleMessageSource {
 
         // If multiple result, make sure we return the most wanted message.
         def format
-        for(alt in alternatives) {
-            def msg = result.find{it.code == alt}
+        for (alt in alternatives) {
+            def msg = result.find {it.code == alt}
             format = msg ? new MessageFormat(msg.text, locale) : fallback(alt, locale)
-            if(format != null) {
+            if (format != null) {
                 break
             }
         }
         return format
     }
 }
-

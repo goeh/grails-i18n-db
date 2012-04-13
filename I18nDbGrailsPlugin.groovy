@@ -25,17 +25,18 @@ import org.codehaus.groovy.grails.web.i18n.ParamsAwareLocaleChangeInterceptor
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
 import grails.util.Environment
+import grails.plugins.i18ndb.MessageSource
 import org.apache.commons.logging.LogFactory
 
 class I18nDbGrailsPlugin {
 
-    private static LOG = LogFactory.getLog(I18nDbGrailsPlugin)
+    private static LOG = LogFactory.getLog(MessageSource) // debug grails.plugins.i18ndb.MessageSource
 
     String baseDir = "grails-app/i18n"
     String watchedResources = "file:./${baseDir}/**/*.properties".toString()
 
     // the plugin version
-    def version = "0.2"
+    def version = "0.5"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -45,11 +46,11 @@ class I18nDbGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    def title = "Database Persisted i18n Messages"
+    def title = "Read i18n messages from the database"
     def author = "Goran Ehrson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
-Override i18n messages in database.
+Override i18n messages in your database to allow sysadmins to modify labels, help texts, etc. in your application.
 '''
 
     // URL to the plugin's documentation
@@ -120,7 +121,8 @@ Override i18n messages in database.
             }
         }
 
-        messageSource(grails.plugins.i18ndb.MessageSource) {
+        messageSource(grails.plugins.i18ndb.MessageSource) { bean ->
+            bean.autowire = 'byName'
             basenames = baseNames.toArray()
             fallbackToSystemLocale = false
             pluginManager = manager
@@ -147,6 +149,9 @@ Override i18n messages in database.
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
+        if (!applicationContext.containsBean('messageCache')) {
+            LOG.warn("Please configure bean 'messageCache' to speed up i18n message lookups from database.")
+        }
     }
 
     def onChange = { event ->
@@ -182,7 +187,7 @@ Override i18n messages in database.
             messageSource.clearCache()
         }
         else {
-            LOG.warn "Bean messageSource is not an instance of ${ReloadableResourceBundleMessageSource.name}. Can't reload"
+            log.warn "Bean messageSource is not an instance of ${ReloadableResourceBundleMessageSource.name}. Can't reload"
         }
     }
 
