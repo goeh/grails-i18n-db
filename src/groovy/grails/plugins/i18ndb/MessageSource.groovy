@@ -40,7 +40,7 @@ class MessageSource extends PluginAwareResourceBundleMessageSource {
         def format = messageCache?.get(key)?.value
         if (format == null) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug('cache MISS ' + code)
+                LOG.debug('- ' + code)
             }
             format = findCode(code, locale) {a, l ->
                 super.resolveCode(a, l)
@@ -51,10 +51,10 @@ class MessageSource extends PluginAwareResourceBundleMessageSource {
         } else if (!(format instanceof MessageFormat)) {
             format = new MessageFormat(format.toString(), locale)
             if (LOG.isDebugEnabled()) {
-                LOG.debug('cache HIT ' + code)
+                LOG.debug('! ' + code)
             }
         } else if (LOG.isDebugEnabled()) {
-            LOG.debug('cache HIT ' + code)
+            LOG.debug('+ ' + code)
         }
         return format
     }
