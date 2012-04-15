@@ -22,6 +22,13 @@ import org.apache.tools.zip.*
 class AppMessageService {
 
     def grailsApplication
+    def messageCache
+
+    void removeFromCache(AppMessage message) {
+        if (messageCache) {
+            messageCache.removeAll() // TODO remove only the updated message from cache.
+        }
+    }
 
     File export(String filename = null) {
 

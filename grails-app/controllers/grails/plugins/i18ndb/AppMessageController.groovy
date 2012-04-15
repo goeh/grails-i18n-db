@@ -18,6 +18,7 @@
 package grails.plugins.i18ndb
 
 import org.springframework.dao.DataIntegrityViolationException
+import net.sf.ehcache.Cache
 
 class AppMessageController {
 
@@ -110,6 +111,8 @@ class AppMessageController {
                     render view: 'edit', model: [appMessage: appMessage]
                     return
                 }
+
+                appMessageService.removeFromCache(appMessage)
 
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'appMessage.label', default: 'AppMessage'), appMessage.toString()])
                 redirect action: 'list'
