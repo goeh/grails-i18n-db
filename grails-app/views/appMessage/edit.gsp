@@ -29,7 +29,7 @@
             <f:with bean="appMessage">
                 <f:field property="code" input-autofocus=""/>
                 <f:field property="locale">
-                    <g:localeSelect name="locale" value="${appMessage.locale}"
+                    <g:localeSelect name="locale" value="${appMessage.locale}" sort="displayCountry"
                                     noSelection="['':'']"/>
                 </f:field>
                 <f:field property="text"><g:textArea name="text" cols="70" rows="3" class="span6"
