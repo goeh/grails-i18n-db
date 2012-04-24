@@ -47,6 +47,13 @@ class AppMessageController {
     def grailsApplication
     def appMessageService
 
+    private String fixLocale(String arg) {
+        if(arg && grailsApplication.config.plugin.i18ndb.skipCountry) {
+            return arg.split('_')[0].toLowerCase()
+        }
+        return arg
+    }
+
     def index() {
         redirect action: 'list', params: params
     }
@@ -62,6 +69,7 @@ class AppMessageController {
                 [appMessage: new AppMessage(params)]
                 break
             case 'POST':
+                params.locale = fixLocale(params.locale)
                 def appMessage = new AppMessage(params)
                 if (!appMessage.save(flush: true)) {
                     render view: 'create', model: [appMessage: appMessage]
@@ -87,6 +95,7 @@ class AppMessageController {
                 [appMessage: appMessage]
                 break
             case 'POST':
+                params.locale = fixLocale(params.locale)
                 def appMessage = AppMessage.get(params.id)
                 if (!appMessage) {
                     flash.message = message(code: 'default.not.found.message', args: [message(code: 'appMessage.label', default: 'AppMessage'), params.id])
