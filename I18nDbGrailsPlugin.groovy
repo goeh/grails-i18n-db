@@ -36,7 +36,7 @@ class I18nDbGrailsPlugin {
     String watchedResources = "file:./${baseDir}/**/*.properties".toString()
 
     // the plugin version
-    def version = "0.6.1"
+    def version = "0.7.0"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -143,12 +143,7 @@ Override i18n messages in your database to allow sysadmins to modify labels, hel
         localeResolver(SessionLocaleResolver)
     }
 
-    def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
-    }
-
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
         if (!applicationContext.containsBean('messageCache')) {
             LOG.warn("Please configure bean 'messageCache' to speed up i18n message lookups from database.")
         }
@@ -189,14 +184,5 @@ Override i18n messages in your database to allow sysadmins to modify labels, hel
         else {
             log.warn "Bean messageSource is not an instance of ${ReloadableResourceBundleMessageSource.name}. Can't reload"
         }
-    }
-
-    def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
-    }
-
-    def onShutdown = { event ->
-        // TODO Implement code that is executed when the application shuts down (optional)
     }
 }

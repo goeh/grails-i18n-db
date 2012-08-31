@@ -30,7 +30,7 @@ class AppMessage {
     static constraints = {
         code(maxSize:100, blank:false, unique:'locale')
         locale(maxSize:10, nullable:true)
-        text(maxSize:255)
+        text(maxSize:500)
     }
     static mapping = {
         cache usage:'nonstrict-read-write'
